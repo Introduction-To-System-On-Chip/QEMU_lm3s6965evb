@@ -19,10 +19,8 @@ BINARY_OBJDUMP := objdump_$(BINARY)
 
 CROSS_COMPILE = $(TOOLCHAIN)/arm-none-eabi-
 CC = $(CROSS_COMPILE)gcc
-LD = $(CROSS_COMPILE)ld
 GDB = $(CROSS_COMPILE)gdb
 OBJ = $(CROSS_COMPILE)objdump
-NM = $(CROSS_COMPILE)nm
 
 LINKER_SCRIPT = gcc_arm.ld
 
@@ -49,9 +47,6 @@ all: $(BINARY)
 boot.o: $(SRC_ASM)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-# Generate two separate images (one for Non-Secure and another for Secure) with
-# different linker scripts (as they will have different addresses to locate the code).
-# This is to make sure that there is no clash with the symbols.
 $(BINARY): $(SRC_C) boot.o
 	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $@
 	$(OBJ) -D $@ > $(BINARY_OBJDUMP)
