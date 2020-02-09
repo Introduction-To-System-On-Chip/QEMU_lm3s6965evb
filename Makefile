@@ -59,16 +59,17 @@ $(BINARY): $(SRC_C) boot.o
 
 # Ctrl-A, then X to quit
 run: $(BINARY)
-	$(QEMU_COMMAND)
+	-$(QEMU_COMMAND) -d int,cpu_reset
+	echo $? " has exited"
 
 gdbserver: $(BINARY)
-	$(QEMU_COMMAND) -S -s 
+	$(QEMU_COMMAND) -S -s -d int,cpu_reset
 
 help:
 	$(QEMU_PATH) --machine help
 
 gdb: $(BINARY)
-	$(GDB) $(BINARY) -ex "target remote:4510"
+	$(GDB) $(BINARY) -ex "target remote:1234"
 
 clean:
 	rm -f $(BINARY_OBJDUMP) *.o *.elf 
