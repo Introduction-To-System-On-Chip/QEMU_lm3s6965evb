@@ -49,7 +49,7 @@ void configureRegion (
 
 }
 
-int main(void)
+void ManualInitMPU(void)
 {
   char printBuffer[64];
   uint32_t* registerAddr;
@@ -100,7 +100,76 @@ int main(void)
   sprintf(printBuffer,
           "0x%x has value 0x%x\n", registerAddr, *registerAddr);
   semihost(SYS_WRITE0, printBuffer);
+}
 
+void CmsisInitMPU(void)
+{
+  ARM_MPU_Disable();
+
+  ARM_MPU_SetRegionEx(
+    0UL                                    /* Region Number */,
+    0x00000000UL                           /* Base Address  */,
+    ARM_MPU_RASR(0UL                       /* DisableExec */,
+                 ARM_MPU_AP_FULL           /* AccessPermission*/,
+                 0UL                       /* TypeExtField*/,
+                 0UL                       /* IsShareable*/,
+                 0UL                       /* IsCacheable*/,
+                 0UL                       /* IsBufferable*/,
+                 0x00UL                    /* SubRegionDisable*/,
+                 ARM_MPU_REGION_SIZE_128KB /* Size*/)
+    );
+
+  ARM_MPU_SetRegionEx(
+    1UL                                   /* Region Number */,
+    0x20000000UL                          /* Base Address  */,
+    ARM_MPU_RASR(0UL                      /* DisableExec */,
+                 ARM_MPU_AP_FULL          /* AccessPermission*/,
+                 0UL                      /* TypeExtField*/,
+                 0UL                      /* IsShareable*/,
+                 0UL                      /* IsCacheable*/,
+                 0UL                      /* IsBufferable*/,
+                 0x00UL                   /* SubRegionDisable*/,
+                 ARM_MPU_REGION_SIZE_16KB /* Size*/)
+    );
+
+  ARM_MPU_SetRegionEx(
+    2UL                                   /* Region Number */,
+    0x20008000UL                          /* Base Address  */,
+    ARM_MPU_RASR(0UL                      /* DisableExec */,
+                 ARM_MPU_AP_NONE          /* AccessPermission*/,
+                 0UL                      /* TypeExtField*/,
+                 0UL                      /* IsShareable*/,
+                 0UL                      /* IsCacheable*/,
+                 0UL                      /* IsBufferable*/,
+                 0x00UL                   /* SubRegionDisable*/,
+                 ARM_MPU_REGION_SIZE_16KB /* Size*/)
+    );
+
+  ARM_MPU_SetRegionEx(
+    3UL                                   /* Region Number */,
+    0x2000C000UL                          /* Base Address  */,
+    ARM_MPU_RASR(1UL                      /* DisableExec */,
+                 ARM_MPU_AP_FULL          /* AccessPermission*/,
+                 0UL                      /* TypeExtField*/,
+                 0UL                      /* IsShareable*/,
+                 0UL                      /* IsCacheable*/,
+                 0UL                      /* IsBufferable*/,
+                 0x00UL                   /* SubRegionDisable*/,
+                 ARM_MPU_REGION_SIZE_16KB /* Size*/)
+    );
+
+  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
+                 | MPU_CTRL_HFNMIENA_Msk
+                 | MPU_CTRL_ENABLE_Msk);
+
+}
+
+int main(void)
+{
+
+  //ManualInitMPU();
+
+  CmsisInitMPU();
 
   uint32_t* addrRegion1 = 0x20000400;
   uint32_t* addrRegion2 = 0x20008000;

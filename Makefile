@@ -1,5 +1,4 @@
 BINARY := cm3.elf
-
 MACHINE := lm3s6965evb
 
 CMSIS ?= ./cmsis
