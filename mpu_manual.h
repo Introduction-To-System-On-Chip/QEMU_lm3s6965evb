@@ -1,0 +1,10 @@
+#ifndef MPU_MANUAL_H
+#define MPU_MANUAL_H
+
+#define MPU_REG_TYPE 0xE000ED90
+#define MPU_REG_CTRL 0xE000ED94
+#define MPU_REG_RNR  0xE000ED98
+#define MPU_REG_RBAR 0xE000ED9C
+#define MPU_REG_RLAR 0xE000EDA0
+
+#endif

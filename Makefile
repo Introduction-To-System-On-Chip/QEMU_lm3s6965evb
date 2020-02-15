@@ -26,6 +26,7 @@ LINKER_SCRIPT = gcc_arm.ld
 SRC_ASM = $(CMSIS)/Device/ARM/ARMCM3/Source/GCC/startup_ARMCM3.S
 
 SRC_C = $(CMSIS)/Device/ARM/ARMCM3/Source/system_ARMCM3.c \
+	start.c \
 	main.c
 
 INCLUDE_FLAGS = -I$(CMSIS)/Device/ARM/ARMCM3/Include \
