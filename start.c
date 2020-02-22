@@ -6,7 +6,6 @@ extern int main(void);
 
 /* Static functions and constant data */
 const int SYS_WRITE0 = 0x04;
-const int SYS_EXIT = 0x18;
 
 void semihost(int sys_id, const void *arg)
 {
@@ -18,20 +17,51 @@ void semihost(int sys_id, const void *arg)
 }
 
 void logPrint(const char* format, ...)
-{ 
-  char text[256];
-  va_list args;
-  va_start (args, format);
-  sprintf(text, format, args);
-  semihost(SYS_WRITE0, text);
-  va_end (args);
+{
+  char buffer[256] = {'\0'};
+  int bufferPos = 0;
+
+  unsigned int hex;
+
+  va_list arg;
+  va_start(arg, format);
+
+  for(char* nextChar = format; *nextChar != '\0'; nextChar++)
+  {
+    while ((*nextChar != '%') && (*nextChar != '\0'))
+    {
+      sprintf(buffer + bufferPos, "%c", *nextChar);
+      bufferPos++;
+      nextChar++;
+    }
+
+    if (*nextChar == '\0')
+    {
+      break;
+    }
+
+    nextChar++;
+
+    switch (*nextChar)
+    {
+      case 'x':
+        hex = va_arg(arg, unsigned int);
+        int written = 0;
+        written = sprintf(buffer + bufferPos, "%x", hex);
+        bufferPos = bufferPos + written;
+        break;
+    }
+  }
+
+  buffer[bufferPos] = '\0';
+  va_end(arg);
+  semihost(SYS_WRITE0, buffer);
 }
 
 void _start(void)
 {
   main();
-  int success = 0x20026;
-  semihost(SYS_EXIT, &success);
+  exit(0);
   while (1) {
   }
 }
