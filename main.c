@@ -3,13 +3,6 @@
 #include <stdint.h>
 #include "mpu_manual.h"
 
-void MPUFaultExit()
-{
-  logPrint("MPUFaultExit\n");
-  exit(0);
-  while(1);
-}
-
 /*
  *
  * 0x20010000		RAM (Stack start, going down)
@@ -32,18 +25,21 @@ void MPUFaultExit()
  *
  */
 
+#ifdef MPU_USE_EXIT_HANDLER
+void MPUFaultExit(void)
+{
+  logPrint("MPUFaultExit: exiting...\n");
+  exit(0);
+  while(1);
+}
+#endif
+
 void MemManage_Handler(void)
 {
   uint32_t lrValue = 0;
 
   __ASM volatile ("MOV %0, LR\n" : "=r" (lrValue) );
-  logPrint("LR has value 0x%x\n", lrValue);
-  /* After the return, the faulty instruction will be executed again */
-
-  uint32_t mpuAddr = MPUFaultExit;
-  __ASM volatile ("MOV LR, %0\n" : "=r" (mpuAddr) );
-  __ASM volatile ("MOV %0, LR\n" : "=r" (lrValue) );
-  __ASM volatile ("BX LR\n");
+  logPrint("MemManage_Handler: LR has value 0x%x\n", lrValue);
 
   /*
    * It is possible to return to another address or to skip the faulty
@@ -53,6 +49,15 @@ void MemManage_Handler(void)
    * (if an RTOS is used) or reconfigure the MPU and re-execute the instruction.
    */
 
+#ifdef MPU_USE_EXIT_HANDLER
+  /* Return to another address */
+  uint32_t mpuAddr = MPUFaultExit;
+  __ASM volatile ("MOV LR, %0\n" : "=r" (mpuAddr));
+  __ASM volatile ("BX LR\n");
+#else
+  /* Disable MPU and restart instruction */
+  ARM_MPU_Disable();
+#endif
 }
 
 void configureRegion (
