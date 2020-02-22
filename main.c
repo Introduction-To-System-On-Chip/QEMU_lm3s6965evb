@@ -41,6 +41,12 @@ void MPUFaultExit(void)
 }
 #endif
 
+void SVC_Handler(void)
+{
+  logPrint("SVC Call, switching to Priviledge\n");
+  __set_CONTROL(__get_CONTROL() & ~CONTROL_nPRIV_Msk);
+}
+
 void MemManage_Handler(void)
 {
   uint32_t lrValue = 0;
@@ -256,19 +262,6 @@ void CmsisInitMPU(void)
                  ARM_MPU_REGION_SIZE_16KB /* Size*/)
   );
 
-  ARM_MPU_SetRegionEx(
-    8UL                                   /* Region Number */,
-    0x20028000UL                          /* Base Address  */,
-    ARM_MPU_RASR(1UL                      /* DisableExec */,
-                 ARM_MPU_AP_RO            /* AccessPermission*/,
-                 0UL                      /* TypeExtField*/,
-                 0UL                      /* IsShareable*/,
-                 0UL                      /* IsCacheable*/,
-                 0UL                      /* IsBufferable*/,
-                 0x00UL                   /* SubRegionDisable*/,
-                 ARM_MPU_REGION_SIZE_16KB /* Size*/)
-  );
-
   ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
                  | MPU_CTRL_HFNMIENA_Msk
                  | MPU_CTRL_ENABLE_Msk);
@@ -315,6 +308,25 @@ void CmsisInitMPU(void)
   *addrRegion7 = 0;
   readValueRegion = *addrRegion7;
 
+
+  ARM_MPU_Disable();
+  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
+  	         | MPU_CTRL_HFNMIENA_Msk
+                 | MPU_CTRL_ENABLE_Msk);
+
+  ARM_MPU_SetRegionEx(
+    7UL                                   /* Region Number */,
+    0x20028000UL                          /* Base Address  */,
+    ARM_MPU_RASR(1UL                      /* DisableExec */,
+                 ARM_MPU_AP_RO            /* AccessPermission*/,
+                 0UL                      /* TypeExtField*/,
+                 0UL                      /* IsShareable*/,
+                 0UL                      /* IsCacheable*/,
+                 0UL                      /* IsBufferable*/,
+                 0x00UL                   /* SubRegionDisable*/,
+                 ARM_MPU_REGION_SIZE_16KB /* Size*/)
+  );
+
   /* ARM_MPU_AP_RO   Privileged and Unprivileged Read-only */
   *addrRegion8 = 0;
   /* Fault and MPU has been disabled in MemHandler. */
@@ -325,10 +337,25 @@ void CmsisInitMPU(void)
   readValueRegion = *addrRegion8;
   /* No fault. No need to enable MPU. */
 
+  logPrint("Ending priviledge mode. Switching to Usermode\n");
+
+  /* Switch to User Thread Mode!*/
+  __set_CONTROL(__get_CONTROL() | CONTROL_nPRIV_Msk);
+  *addrRegion7 = 0;
+
+  
+  __ASM volatile ("SVC #8\n");
 }
 
 int main(void)
 {
+  __set_PSP(0x20000000U);
+
+  logPrint("Control 0x%x\n"
+           "PSP 0x%x\n"
+           "MSP 0x%x\n",
+            __get_CONTROL(), __get_PSP(), __get_MSP());
+
   //ManualInitMPU();
   CmsisInitMPU();
 
