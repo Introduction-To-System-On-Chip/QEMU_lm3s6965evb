@@ -46,7 +46,12 @@ void MemManage_Handler(void)
   uint32_t lrValue = 0;
 
   __ASM volatile ("MOV %0, LR\n" : "=r" (lrValue) );
-  logPrint("MemManage_Handler: LR has value 0x%x\n", lrValue);
+
+  logPrint("MemManage_Handler:\n"
+           "\tcontrol 0x%x\n"
+           "\tmmfar 0x%x\n"
+           "\tLR 0x%x\n",
+           __get_CONTROL(), SCB->MMFAR, lrValue);
 
   /*
    * It is possible to return to another address or to skip the faulty
