@@ -1,6 +1,7 @@
 BINARY := cm3.elf
 MACHINE := lm3s6965evb
 
+APPLICATION ?= main
 CMSIS ?= ./cmsis
 QEMU_PATH ?= ./qemu/arm-softmmu/qemu-system-arm
 TOOLCHAIN ?= ./gcc/bin
@@ -141,6 +142,7 @@ CFLAGS = -mcpu=cortex-m3 \
 	-specs=nano.specs -specs=nosys.specs \
         -specs=rdimon.specs \
 	-Wall \
+	-g3 \
 	$(INCLUDE_FLAGS) \
 	-mthumb \
 	-nostartfiles
