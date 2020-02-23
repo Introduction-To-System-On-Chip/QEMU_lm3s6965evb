@@ -202,24 +202,11 @@ void CmsisInitMPU(void)
                  0UL                      /* IsCacheable*/,
                  0UL                      /* IsBufferable*/,
                  0x00UL                   /* SubRegionDisable*/,
-                 ARM_MPU_REGION_SIZE_32KB /* Size*/)
+                 ARM_MPU_REGION_SIZE_64KB /* Size*/)
   );
 
   ARM_MPU_SetRegionEx(
     2UL                                   /* Region Number */,
-    0x20008000UL                          /* Base Address  */,
-    ARM_MPU_RASR(0UL                      /* DisableExec */,
-                 ARM_MPU_AP_FULL          /* AccessPermission*/,
-                 0UL                      /* TypeExtField*/,
-                 0UL                      /* IsShareable*/,
-                 0UL                      /* IsCacheable*/,
-                 0UL                      /* IsBufferable*/,
-                 0x00UL                   /* SubRegionDisable*/,
-                 ARM_MPU_REGION_SIZE_32KB /* Size*/)
-  );
-
-  ARM_MPU_SetRegionEx(
-    3UL                                   /* Region Number */,
     0x20010000UL                          /* Base Address  */,
     ARM_MPU_RASR(1UL                      /* DisableExec */,
                  ARM_MPU_AP_NONE          /* AccessPermission*/,
@@ -232,7 +219,7 @@ void CmsisInitMPU(void)
   );
 
   ARM_MPU_SetRegionEx(
-    4UL                                   /* Region Number */,
+    3UL                                   /* Region Number */,
     0x20014000UL                          /* Base Address  */,
     ARM_MPU_RASR(1UL                      /* DisableExec */,
                  ARM_MPU_AP_FULL          /* AccessPermission*/,
@@ -245,7 +232,7 @@ void CmsisInitMPU(void)
   );
 
   ARM_MPU_SetRegionEx(
-    5UL                                   /* Region Number */,
+    4UL                                   /* Region Number */,
     0x20018000UL                          /* Base Address  */,
     ARM_MPU_RASR(1UL                      /* DisableExec */,
                  ARM_MPU_AP_PRO           /* AccessPermission*/,
@@ -258,7 +245,7 @@ void CmsisInitMPU(void)
   );
 
   ARM_MPU_SetRegionEx(
-    6UL                                   /* Region Number */,
+    5UL                                   /* Region Number */,
     0x20020000UL                          /* Base Address  */,
     ARM_MPU_RASR(1UL                      /* DisableExec */,
                  ARM_MPU_AP_PRIV          /* AccessPermission*/,
@@ -272,10 +259,23 @@ void CmsisInitMPU(void)
 
 
   ARM_MPU_SetRegionEx(
-    7UL                                   /* Region Number */,
+    6UL                                   /* Region Number */,
     0x20024000UL                          /* Base Address  */,
     ARM_MPU_RASR(1UL                      /* DisableExec */,
                  ARM_MPU_AP_URO           /* AccessPermission*/,
+                 0UL                      /* TypeExtField*/,
+                 0UL                      /* IsShareable*/,
+                 0UL                      /* IsCacheable*/,
+                 0UL                      /* IsBufferable*/,
+                 0x00UL                   /* SubRegionDisable*/,
+                 ARM_MPU_REGION_SIZE_16KB /* Size*/)
+  );
+
+  ARM_MPU_SetRegionEx(
+    7UL                                   /* Region Number */,
+    0x20028000UL                          /* Base Address  */,
+    ARM_MPU_RASR(1UL                      /* DisableExec */,
+                 ARM_MPU_AP_RO            /* AccessPermission*/,
                  0UL                      /* TypeExtField*/,
                  0UL                      /* IsShareable*/,
                  0UL                      /* IsCacheable*/,
@@ -289,11 +289,11 @@ void CmsisInitMPU(void)
                  | MPU_CTRL_ENABLE_Msk);
 
   uint32_t* addrRegion2 = 0x20010000U;
-  uint32_t* addrRegion4 = 0x20014000U;
-  uint32_t* addrRegion5 = 0x20018000U;
-  uint32_t* addrRegion6 = 0x20020000U;
-  uint32_t* addrRegion7 = 0x20024000U;
-  uint32_t* addrRegion8 = 0x20028000U;
+  uint32_t* addrRegion3 = 0x20014000U;
+  uint32_t* addrRegion4 = 0x20018000U;
+  uint32_t* addrRegion5 = 0x20020000U;
+  uint32_t* addrRegion6 = 0x20024000U;
+  uint32_t* addrRegion7 = 0x20028000U;
   uint32_t readValueRegion;
 
   /* ARM_MPU_AP_NONE No access */
@@ -309,60 +309,44 @@ void CmsisInitMPU(void)
                  | MPU_CTRL_ENABLE_Msk);
 
   /* ARM_MPU_AP_FULL  Full access */
-  *addrRegion4 = 0;
-  readValueRegion = *addrRegion4;
+  *addrRegion3 = 0;
+  readValueRegion = *addrRegion3;
   /* No fault. No need to enable MPU. */
 
   /* ARM_MPU_AP_PRO  Privileged Read-only */
-  readValueRegion = *addrRegion5;
+  readValueRegion = *addrRegion4;
   /* No fault. No need to enable MPU. */
-  *addrRegion5 = 0;
+  *addrRegion4 = 0;
   /* Fault and MPU has been disabled in MemHandler. */
   ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
                  | MPU_CTRL_HFNMIENA_Msk
                  | MPU_CTRL_ENABLE_Msk);
 
   /* ARM_MPU_AP_PRIV Privileged Read/Write: privileged access only */
+  *addrRegion5 = 0;
+  readValueRegion = *addrRegion5;
+
+  /* ARM_MPU_AP_URO  Privileged Read/Write; Unprivileged Read-only */
   *addrRegion6 = 0;
   readValueRegion = *addrRegion6;
 
-  /* ARM_MPU_AP_URO  Privileged Read/Write; Unprivileged Read-only */
-  *addrRegion7 = 0;
-  readValueRegion = *addrRegion7;
-
-
-  ARM_MPU_Disable();
-  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
-  	         | MPU_CTRL_HFNMIENA_Msk
-                 | MPU_CTRL_ENABLE_Msk);
-
-  ARM_MPU_SetRegionEx(
-    7UL                                   /* Region Number */,
-    0x20028000UL                          /* Base Address  */,
-    ARM_MPU_RASR(1UL                      /* DisableExec */,
-                 ARM_MPU_AP_RO            /* AccessPermission*/,
-                 0UL                      /* TypeExtField*/,
-                 0UL                      /* IsShareable*/,
-                 0UL                      /* IsCacheable*/,
-                 0UL                      /* IsBufferable*/,
-                 0x00UL                   /* SubRegionDisable*/,
-                 ARM_MPU_REGION_SIZE_16KB /* Size*/)
-  );
-
   /* ARM_MPU_AP_RO   Privileged and Unprivileged Read-only */
-  *addrRegion8 = 0;
+  *addrRegion7 = 0;
   /* Fault and MPU has been disabled in MemHandler. */
   ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
                  | MPU_CTRL_HFNMIENA_Msk
                  | MPU_CTRL_ENABLE_Msk);
 
-  readValueRegion = *addrRegion8;
+  readValueRegion = *addrRegion7;
   /* No fault. No need to enable MPU. */
 
   logPrint("Ending priviledge mode. Switching to Usermode\n");
 
   /* Switch to User Thread Mode!*/
   __set_CONTROL(__get_CONTROL() | CONTROL_nPRIV_Msk);
+  /* Make sure all instructions fetched before the change of context are stopped. */
+  /* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dai0321a/BIHFJCAC.html */
+  __ASM volatile ("ISB\n");
   *addrRegion7 = 0;
 
   
