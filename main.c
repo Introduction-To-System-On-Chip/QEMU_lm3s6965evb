@@ -50,6 +50,7 @@ void SVC_Handler(void)
 void MemManage_Handler(void)
 {
   uint32_t lrValue = 0;
+  uint32_t cfsr = SCB->CFSR;
 
   __ASM volatile ("MOV %0, LR\n" : "=r" (lrValue) );
 
@@ -58,6 +59,26 @@ void MemManage_Handler(void)
            "\tmmfar 0x%x\n"
            "\tLR 0x%x\n",
            __get_CONTROL(), SCB->MMFAR, lrValue);
+
+  if (cfsr & SCB_CFSR_MMARVALID_Msk)
+  {
+    logPrint("Attempt to access address\n");
+  }
+
+  if (cfsr & SCB_CFSR_DACCVIOL_Msk)
+  {
+    logPrint("Operation not permitted\n");
+  }
+
+  if (cfsr & SCB_CFSR_IACCVIOL_Msk)
+  {
+    logPrint("Non-executable region\n");
+  }
+
+  if (cfsr & SCB_CFSR_MSTKERR_Msk)
+  {
+    logPrint("Stacking error\n");
+  }
 
   /*
    * It is possible to return to another address or to skip the faulty
@@ -76,6 +97,7 @@ void MemManage_Handler(void)
   /* Disable MPU and restart instruction */
   ARM_MPU_Disable();
 #endif
+
 }
 
 void configureRegion (
