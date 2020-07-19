@@ -6,6 +6,8 @@
 #include <stdint.h>
 
 /*
+ * Memory mapping with the regions that are allocated in the program.
+ *
  * 0x20030000U
  *     Region 8 -16KB
  * 0x20028000U
@@ -18,15 +20,13 @@
  *     Region 4 -16KB
  * 0x20014000
  *     Region 3 -16KB
- * 0x20010000		Stack start, going down
+ * 0x20010000		        Stack start, going down
  *     Region 2 -32KB
  * 0x20008000
  *     Region 1 -32KB
  * 0x20000000           Heap start, going up -- RAM
  *
  * ...
- *
- * 0x00040000
  *
  * 0x00020000
  *     Region 0 - 128KB
@@ -102,7 +102,7 @@ void MemManage_Handler(void)
 
 }
 
-void configureRegion (
+static void ManualConfigureRegion (
   uint8_t  regionNumber,
   uint32_t regionBaseAddress,
   uint8_t  regionSize,
@@ -142,34 +142,33 @@ void ManualInitMPU(void)
   *registerAddr = 0x0;
   logPrint("0x%x has value 0x%x\n", registerAddr, *registerAddr);
 
-  configureRegion(
+  ManualConfigureRegion(
     0,
     0,
     0b10000 /* 128KB */,
     0b11,
     0);
 
-  configureRegion(
+  ManualConfigureRegion(
     1,
     0x20000000,
     0b01110 /* 32KB */,
     0b11,
     0);
 
-  configureRegion(
+  ManualConfigureRegion(
     2,
     0x20008000,
     0b01110 /* 32KB */,
     0b0,
     0);
 
-  configureRegion(
+  ManualConfigureRegion(
     3,
     0x2000C000,
     0b01101 /* 16KB */,
     0b11,
     1);
-
 
   registerAddr = MPU_REG_CTRL;
   *registerAddr = 0x7;
@@ -351,7 +350,6 @@ void CmsisInitMPU(void)
   __ASM volatile ("ISB\n");
   *addrRegion7 = 0;
 
-  
   __ASM volatile ("SVC #8\n");
 }
 
@@ -361,7 +359,7 @@ int main(void)
 
   logPrint("Control 0x%x\n"
            "PSP 0x%x\n"
-           "MSP 0x%x\n",
+           "MSP 0x%x\n\n",
             __get_CONTROL(), __get_PSP(), __get_MSP());
 
   //ManualInitMPU();
