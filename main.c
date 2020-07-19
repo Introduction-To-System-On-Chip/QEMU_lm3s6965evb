@@ -287,6 +287,10 @@ void CmsisInitMPU(void)
   ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
                  | MPU_CTRL_HFNMIENA_Msk
                  | MPU_CTRL_ENABLE_Msk);
+}
+
+void accessRegionsMPU(int manualConfiguration)
+{
 
   uint32_t* addrRegion2 = (uint32_t*) 0x20010000U;
   uint32_t* addrRegion3 = (uint32_t*) 0x20014000U;
@@ -300,14 +304,31 @@ void CmsisInitMPU(void)
   /* ARM_MPU_AP_NONE No access */
   *addrRegion2 = 0;
   /* Fault and MPU has been disabled in MemHandler. */
-  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
-                 | MPU_CTRL_HFNMIENA_Msk
-                 | MPU_CTRL_ENABLE_Msk);
+  if (manualConfiguration != 0)
+  {
+    uint32_t* registerAddr = MPU_REG_CTRL;
+    *registerAddr = 0x7;
+  }
+  else
+  {
+    ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
+                   | MPU_CTRL_HFNMIENA_Msk
+                   | MPU_CTRL_ENABLE_Msk);
+  }
+
   readValueRegion = *addrRegion2;
   /* Fault and MPU has been disabled in MemHandler. */
-  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
-                 | MPU_CTRL_HFNMIENA_Msk
-                 | MPU_CTRL_ENABLE_Msk);
+  if (manualConfiguration != 0)
+  {
+    uint32_t* registerAddr = MPU_REG_CTRL;
+    *registerAddr = 0x7;
+  }
+  else
+  {
+    ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
+                   | MPU_CTRL_HFNMIENA_Msk
+                   | MPU_CTRL_ENABLE_Msk);
+  }
 
   /* ARM_MPU_AP_FULL  Full access */
   *addrRegion3 = 0;
@@ -319,9 +340,18 @@ void CmsisInitMPU(void)
   /* No fault. No need to enable MPU. */
   *addrRegion4 = 0;
   /* Fault and MPU has been disabled in MemHandler. */
-  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
-                 | MPU_CTRL_HFNMIENA_Msk
-                 | MPU_CTRL_ENABLE_Msk);
+  /* Fault and MPU has been disabled in MemHandler. */
+  if (manualConfiguration != 0)
+  {
+    uint32_t* registerAddr = MPU_REG_CTRL;
+    *registerAddr = 0x7;
+  }
+  else
+  {
+    ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
+                   | MPU_CTRL_HFNMIENA_Msk
+                   | MPU_CTRL_ENABLE_Msk);
+  }
 
   /* ARM_MPU_AP_PRIV Privileged Read/Write: privileged access only */
   *addrRegion5 = 0;
@@ -334,9 +364,18 @@ void CmsisInitMPU(void)
   /* ARM_MPU_AP_RO   Privileged and Unprivileged Read-only */
   *addrRegion7 = 0;
   /* Fault and MPU has been disabled in MemHandler. */
-  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
-                 | MPU_CTRL_HFNMIENA_Msk
-                 | MPU_CTRL_ENABLE_Msk);
+  /* Fault and MPU has been disabled in MemHandler. */
+  if (manualConfiguration != 0)
+  {
+    uint32_t* registerAddr = MPU_REG_CTRL;
+    *registerAddr = 0x7;
+  }
+  else
+  {
+    ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk
+                   | MPU_CTRL_HFNMIENA_Msk
+                   | MPU_CTRL_ENABLE_Msk);
+  }
 
   readValueRegion = *addrRegion7;
   /* No fault. No need to enable MPU. */
@@ -351,6 +390,7 @@ void CmsisInitMPU(void)
   *addrRegion7 = 0;
 
   __ASM volatile ("SVC #8\n");
+
 }
 
 int main(void)
@@ -363,7 +403,10 @@ int main(void)
             __get_CONTROL(), __get_PSP(), __get_MSP());
 
   //ManualInitMPU();
+  //accessRegionsMPU(1);
+
   CmsisInitMPU();
+  accessRegionsMPU(0);
 
   return 0;
 }
