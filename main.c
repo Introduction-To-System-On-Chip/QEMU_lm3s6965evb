@@ -1,7 +1,9 @@
+#include "start.h"
+#include "mpu_manual.h"
+
 #include <ARMCM3.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "mpu_manual.h"
 
 /*
  * 0x20030000U
@@ -131,7 +133,6 @@ void configureRegion (
 
 void ManualInitMPU(void)
 {
-  char printBuffer[64];
   uint32_t* registerAddr;
 
   registerAddr = MPU_REG_TYPE;
@@ -288,13 +289,14 @@ void CmsisInitMPU(void)
                  | MPU_CTRL_HFNMIENA_Msk
                  | MPU_CTRL_ENABLE_Msk);
 
-  uint32_t* addrRegion2 = 0x20010000U;
-  uint32_t* addrRegion3 = 0x20014000U;
-  uint32_t* addrRegion4 = 0x20018000U;
-  uint32_t* addrRegion5 = 0x20020000U;
-  uint32_t* addrRegion6 = 0x20024000U;
-  uint32_t* addrRegion7 = 0x20028000U;
+  uint32_t* addrRegion2 = (uint32_t*) 0x20010000U;
+  uint32_t* addrRegion3 = (uint32_t*) 0x20014000U;
+  uint32_t* addrRegion4 = (uint32_t*) 0x20018000U;
+  uint32_t* addrRegion5 = (uint32_t*) 0x20020000U;
+  uint32_t* addrRegion6 = (uint32_t*) 0x20024000U;
+  uint32_t* addrRegion7 = (uint32_t*) 0x20028000U;
   uint32_t readValueRegion;
+  (void) readValueRegion;
 
   /* ARM_MPU_AP_NONE No access */
   *addrRegion2 = 0;

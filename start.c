@@ -26,7 +26,7 @@ void logPrint(const char* format, ...)
   va_list arg;
   va_start(arg, format);
 
-  for(char* nextChar = format; *nextChar != '\0'; nextChar++)
+  for(const char* nextChar = format; *nextChar != '\0'; nextChar++)
   {
     while ((*nextChar != '%') && (*nextChar != '\0'))
     {
