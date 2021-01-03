@@ -1,20 +1,20 @@
 # qemu-lm3s6965evb
 
-Start arm v7m program on qemu.
-Note: This project is based on a Linux machine like Ubuntu.
-If you want to run it on Windows, use a virtual machine to follow
-the steps.
+Start Arm-v7M program using QEMU (https://www.qemu.org/).
+Note: This project is based on a Linux machine like Ubuntu. If you want to run it on Windows, a virtual machine can be used to follow the steps.
 
-Clone this project using:
+Clone this project using the following command:
 ```
 git clone --recurse-submodules https://github.com/pokitoz/qemu-lm3s6965evb.git
 ```
 
-It will create a folder called qemu-lm3s6965evb.
+It will create a folder called `qemu-lm3s6965evb`.
+
+QEMU can be used to emulate Arm based systems for v7M architecture. The one used in this project is lm3s6965. More information on this device can be found on the Texas Instrument website . This is a Cortex-M3 based chip (v7M architecture) that has an MPU.
 
 ## Prerequisites
 
-It is necessary to have build-essential, make and git:
+It is necessary to have `build-essential`, `make` and `git`:
 ```
 sudo apt -y install git make build-essential
 ```
