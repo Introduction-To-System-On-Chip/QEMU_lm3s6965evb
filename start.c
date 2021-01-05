@@ -62,6 +62,5 @@ void _start(void)
 {
   main();
   exit(0);
-  while (1) {
-  }
+  while (1){};
 }
