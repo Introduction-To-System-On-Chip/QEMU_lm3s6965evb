@@ -19,7 +19,7 @@ QEMU_RUN_COMMAND := $(QEMU_COMMAND) \
 	-device loader,file=$(BINARY) \
 	-machine accel=tcg
 
-BINARY_OBJDUMP := objdump_$(BINARY)
+BINARY_OBJDUMP := objdump.txt
 
 CROSS_COMPILE = $(TOOLCHAIN)arm-none-eabi-
 CC = $(CROSS_COMPILE)gcc
@@ -33,7 +33,7 @@ SRC_ASM = $(CMSIS)/Device/ARM/ARMCM3/Source/GCC/startup_ARMCM3.S
 SRC_C = $(CMSIS)/Device/ARM/ARMCM3/Source/system_ARMCM3.c \
 	start.c
 
-SRC_C += main.c
+3_9_1_SRC = $(wildcard chapt3_9/Ex1/*.c)
 
 INCLUDE_FLAGS = -I$(CMSIS)/Device/ARM/ARMCM3/Include \
 	-I$(CMSIS)/CMSIS/Core/Include \
@@ -50,15 +50,22 @@ CFLAGS = -mcpu=cortex-m3 \
 	       -mthumb \
 	       -nostartfiles
 
-all: $(BINARY)
+all: base
 
 boot.o: $(SRC_ASM)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-$(BINARY): $(SRC_C) boot.o
-	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $@
-	$(OBJ) -D $@ > $(BINARY_OBJDUMP)
+base: $(SRC_C) main.c boot.o
+	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(BINARY)
+	$(OBJ) -D $(BINARY) > $@_$(BINARY_OBJDUMP)
 
+3_8_1: $(SRC_C) main.c boot.o
+	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(BINARY)
+	$(OBJ) -D $(BINARY) > $@_$(BINARY_OBJDUMP)
+
+3_9_1: $(SRC_C) $(3_9_1_SRC) boot.o
+	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(BINARY)
+	$(OBJ) -D $(BINARY) > $@_$(BINARY_OBJDUMP)
 
 # Ctrl-A, then X to quit QEMU
 run: $(BINARY)
