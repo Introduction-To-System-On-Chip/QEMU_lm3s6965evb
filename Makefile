@@ -5,10 +5,12 @@ MACHINE := lm3s6965evb
 # make QEMU_PATH=qemu-system-arm will update the variable of the Makefile
 CMSIS ?= ./CMSIS_5
 # Use QEMU_PATH = qemu-system-arm if QEMU was installed through the apt command.
-QEMU_PATH ?= ./qemu/arm-softmmu/qemu-system-arm
-TOOLCHAIN ?= ./gcc-arm-none-eabi-9-2019-q4-major/bin
+QEMU_PATH ?= ./qemu/arm-softmmu/
+TOOLCHAIN ?= ./gcc-arm-none-eabi-9-2019-q4-major/bin/
 
-QEMU_COMMAND := $(QEMU_PATH) \
+QEMU_COMMAND := $(QEMU_PATH)qemu-system-arm
+
+QEMU_RUN_COMMAND := $(QEMU_COMMAND) \
 	-machine $(MACHINE) \
 	-cpu cortex-m3 \
 	-m 4096 \
@@ -19,7 +21,7 @@ QEMU_COMMAND := $(QEMU_PATH) \
 
 BINARY_OBJDUMP := objdump_$(BINARY)
 
-CROSS_COMPILE = $(TOOLCHAIN)/arm-none-eabi-
+CROSS_COMPILE = $(TOOLCHAIN)arm-none-eabi-
 CC = $(CROSS_COMPILE)gcc
 GDB = $(CROSS_COMPILE)gdb
 OBJ = $(CROSS_COMPILE)objdump
@@ -60,14 +62,14 @@ $(BINARY): $(SRC_C) boot.o
 
 # Ctrl-A, then X to quit QEMU
 run: $(BINARY)
-	-$(QEMU_COMMAND) -d int,cpu_reset
+	-$(QEMU_RUN_COMMAND) -d int,cpu_reset
 	echo $? " has exited"
 
 gdbserver: $(BINARY)
-	$(QEMU_COMMAND) -S -s -d int,cpu_reset
+	$(QEMU_RUN_COMMAND) -S -s -d int,cpu_reset
 
 help:
-	$(QEMU_PATH) --machine help
+	$(QEMU_COMMAND) --machine help
 
 gdb: $(BINARY)
 	$(GDB) $(BINARY) -ex "target remote:1234"

@@ -13,6 +13,8 @@ int main(void)
            "MSP 0x%x\n\n",
             __get_CONTROL(), __get_PSP(), __get_MSP());
 
+  logPrint("Base program\n");
+
   return 0;
 }
 
