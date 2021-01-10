@@ -1,7 +1,8 @@
 # qemu-lm3s6965evb
 
 Start Arm-v7M program using QEMU (https://www.qemu.org/).
-Note: This project is based on a Linux machine like Ubuntu. If you want to run it on Windows, a virtual machine can be used to follow the steps.
+Note: This project is based on a Linux machine like Ubuntu. If you want to run
+it on Windows, a virtual machine can be used to follow the steps.
 
 Clone this project using the following command:
 ```
@@ -10,7 +11,10 @@ git clone --recurse-submodules https://github.com/pokitoz/qemu-lm3s6965evb.git
 
 It will create a folder called `qemu-lm3s6965evb`.
 
-QEMU can be used to emulate Arm based systems for v7M architecture. The one used in this project is lm3s6965. More information on this device can be found on the Texas Instrument website . This is a Cortex-M3 based chip (v7M architecture) that has an MPU.
+QEMU can be used to emulate Arm based systems for v7M architecture. The one used
+in this project is lm3s6965. More information on this device can be found on the
+Texas Instrument website . This is a Cortex-M3 based chip (v7M architecture)
+that has an MPU.
 
 ## Prerequisites
 
@@ -142,6 +146,13 @@ R12=00000000 R13=00000000 R14=ffffffff R15=00000000
 XPSR=40000000 -Z-- A priv-thread
 ```
 
+In the Makefile, you can remove `-d int,cpu_reset` to suppress the following
+traces from QEMU:
+```
+Taking exception 7 [Breakpoint]
+...handling as semihosting call 0x18
+```
+
 - Open another terminal and run gdb with the gdbserver as target.
 
 ```
@@ -169,9 +180,11 @@ Reset_Handler () at CMSIS_5/Device/ARM/ARMCM3/Source/GCC/startup_ARMCM3.S:78
 (gdb) 
 ```
 
-Now, typical gdb commands (step, next, continue, break,..) can be used to debug the program. Pressing CTRL+X + A, it is possible to need the source file with
+Now, typical gdb commands (step, next, continue, break,..) can be used to debug
+the program. Pressing CTRL+X + A, it is possible to need the source file with
 the line being debugged in highlight.
 
 ### Run
 
-If debug is not necessary, simply use `make run` and the program will execute and stop.
+If debug is not necessary, simply use `make run` and the program will execute
+and stop.

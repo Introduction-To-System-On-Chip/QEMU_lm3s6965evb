@@ -18,7 +18,8 @@ QEMU_RUN_COMMAND := $(QEMU_COMMAND) \
   -nographic \
   -semihosting \
   -device loader,file=$(BINARY) \
-  -machine accel=tcg
+  -machine accel=tcg \
+  -d int,cpu_reset
 
 BINARY_OBJDUMP := objdump.txt
 
@@ -96,11 +97,11 @@ rtxboot.o: $(RTX_SRC_ASM)
 
 # Ctrl-A, then X to quit QEMU
 run: $(BINARY)
-	-$(QEMU_RUN_COMMAND) -d int,cpu_reset
+	-$(QEMU_RUN_COMMAND)
 	echo $? " has exited"
 
 gdbserver: $(BINARY)
-	$(QEMU_RUN_COMMAND) -S -s -d int,cpu_reset
+	$(QEMU_RUN_COMMAND) -S -s
 
 help:
 	$(QEMU_COMMAND) --machine help
