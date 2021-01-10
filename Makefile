@@ -29,10 +29,12 @@ OBJ = $(CROSS_COMPILE)objdump
 LINKER_SCRIPT = gcc_arm.ld
 
 SRC_ASM = $(CMSIS)/Device/ARM/ARMCM3/Source/GCC/startup_ARMCM3.S
+3_8_1_SRC_ASM = chapt3_8/Ex1/startup_ARMCM3.S
 
 SRC_C = $(CMSIS)/Device/ARM/ARMCM3/Source/system_ARMCM3.c \
 	start.c
 
+3_8_1_SRC = $(wildcard chapt3_8/Ex1/*.c)
 3_9_1_SRC = $(wildcard chapt3_9/Ex1/*.c)
 
 INCLUDE_FLAGS = -I$(CMSIS)/Device/ARM/ARMCM3/Include \
@@ -48,18 +50,25 @@ CFLAGS = -mcpu=cortex-m3 \
 	       -g3 \
 	       $(INCLUDE_FLAGS) \
 	       -mthumb \
-	       -nostartfiles
+	       -nostartfiles \
+	       -fdata-sections \
+	       -ffunction-sections \
+	       -Wl,--gc-sections \
+	       -DARMCM3
 
 all: base
 
 boot.o: $(SRC_ASM)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
+boot2.o: $(3_8_1_SRC_ASM)
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 base: $(SRC_C) main.c boot.o
 	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(BINARY)
 	$(OBJ) -D $(BINARY) > $@_$(BINARY_OBJDUMP)
 
-3_8_1: $(SRC_C) main.c boot.o
+3_8_1: $(SRC_C) $(3_8_1_SRC) boot2.o
 	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(BINARY)
 	$(OBJ) -D $(BINARY) > $@_$(BINARY_OBJDUMP)
 
