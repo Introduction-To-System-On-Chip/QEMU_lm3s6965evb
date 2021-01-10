@@ -4,8 +4,18 @@
 
 #include "start.h"
 #include "mpu_manual.h"
+#include "mpu_configure.h"
 
 #include <ARMCM3.h>
+
+#ifdef MPU_USE_EXIT_HANDLER
+static void MPUFaultExit(void)
+{
+  logPrint("MPUFaultExit: exiting...\n");
+  exit(0);
+  while(1);
+}
+#endif
 
 void SVC_Handler(void)
 {

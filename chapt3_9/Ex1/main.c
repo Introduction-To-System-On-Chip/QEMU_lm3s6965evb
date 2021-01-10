@@ -1,5 +1,6 @@
 #include "start.h"
 #include "mpu_manual.h"
+#include "mpu_configure.h"
 
 #include <ARMCM3.h>
 #include <stdlib.h>
@@ -7,25 +8,26 @@
 #include <stdbool.h>
 
 /*
- * Memory mapping with the regions that are allocated in the program.
+ * Memory mapping with the regions that are accessed in the program.
+ * The linker script defines the RAM, ROM addresses
  *
  * 0x20030000U
- *     Region 8 -16KB
+ *     Region 8 - Size 16KB
  * 0x20028000U
- *     Region 7 -16KB
+ *     Region 7 - Size 16KB
  * 0x20024000U
- *     Region 6 -16KB
+ *     Region 6 - Size 16KB
  * 0x20020000U
- *     Region 5 -16KB
+ *     Region 5 - Size 16KB
  * 0x20018000U
- *     Region 4 -16KB
+ *     Region 4 - Size 16KB
  * 0x20014000
- *     Region 3 -16KB
- * 0x20010000		        Stack start, going down
- *     Region 2 -32KB
+ *     Region 3 - Size 16KB
+ * 0x20010000
+ *     Region 2 - Size 32KB
  * 0x20008000
- *     Region 1 -32KB
- * 0x20000000           Heap start, going up -- RAM
+ *     Region 1 - Size 32KB
+ * 0x20000000
  *
  * ...
  *
@@ -34,24 +36,14 @@
  * 0x00000000                                -- ROM
  *
  */
-
-#ifdef MPU_USE_EXIT_HANDLER
-static void MPUFaultExit(void)
-{
-  logPrint("MPUFaultExit: exiting...\n");
-  exit(0);
-  while(1);
-}
-#endif
-
 void accessRegionsMPU(bool manualConfiguration)
 {
-  const uint32_t* addrRegion2 = (uint32_t*) 0x20010000U;
-  const uint32_t* addrRegion3 = (uint32_t*) 0x20014000U;
-  const uint32_t* addrRegion4 = (uint32_t*) 0x20018000U;
-  const uint32_t* addrRegion5 = (uint32_t*) 0x20020000U;
-  const uint32_t* addrRegion6 = (uint32_t*) 0x20024000U;
-  const uint32_t* addrRegion7 = (uint32_t*) 0x20028000U;
+  uint32_t* const addrRegion2 = (uint32_t*) 0x20010000U;
+  uint32_t* const addrRegion3 = (uint32_t*) 0x20014000U;
+  uint32_t* const addrRegion4 = (uint32_t*) 0x20018000U;
+  uint32_t* const addrRegion5 = (uint32_t*) 0x20020000U;
+  uint32_t* const addrRegion6 = (uint32_t*) 0x20024000U;
+  uint32_t* const addrRegion7 = (uint32_t*) 0x20028000U;
 
   uint32_t readValueRegion;
   /* Suppress warning as variable is only assigned and never used after */

@@ -4,11 +4,16 @@
 #include <stdint.h>
 
 /* Define addresses for the Registers of the MPU. */
-#define MPU_REG_TYPE ((uint32_t*) 0xE000ED90)
-#define MPU_REG_CTRL ((uint32_t*) 0xE000ED94)
 #define MPU_REG_RNR  ((uint32_t*) 0xE000ED98)
-#define MPU_REG_RBAR ((uint32_t*) 0xE000ED9C)
-#define MPU_REG_RLAR ((uint32_t*) 0xE000EDA0)
+
+/* TODO: Update the address for the TYPE register */
+#define MPU_REG_TYPE ((uint32_t*) 0xDEADBEEF)
+/* TODO: Update the address for the CTRL register */
+#define MPU_REG_CTRL ((uint32_t*) 0xDEADBEEF)
+/* TODO: Update the address for the RBAR register */
+#define MPU_REG_RBAR ((uint32_t*) 0xDEADBEEF)
+/* TODO: Update the address for the RLAR register */
+#define MPU_REG_RLAR ((uint32_t*) 0xDEADBEEF)
 
 void ManualConfigureRegion
 (
