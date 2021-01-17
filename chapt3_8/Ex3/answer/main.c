@@ -15,19 +15,28 @@ static void ThreadA(void const *argument)
     osDelay(1);
     counter--;
   }
+
+  osDelay(1000);
+  exit(0);
 }
 
-/*
- * TODO: Create the ThreadB function for the B thread that will print a string
- */
+static void ThreadB(void const *argument)
+{
+  int counter = 100;
+
+  while (counter != 0) {
+    printString("Hello, I am the running thread B\n");
+    counter--;
+  }
+
+  osDelay(1000);
+  exit(0);
+}
 
 osThreadId tid_ThreadA;
 osThreadDef(ThreadA, osPriorityHigh, 1, 0);
-
-/*
- * TODO: Create the initialization for Thread B with a lower priority than
- * thread A
- */
+osThreadId tid_ThreadB;
+osThreadDef(ThreadB, osPriorityNormal, 1, 0);
 
 static int createThread(void)
 {
@@ -38,7 +47,12 @@ static int createThread(void)
     return -1;
   }
 
-  /* TODO: Create create the Thread B */
+  tid_ThreadB = osThreadCreate(osThread(ThreadB), NULL);
+  if (!tid_ThreadB)
+  {
+    printString("Could not create thread B\n");
+    return -1;
+  }
 
   return 0;
 }
