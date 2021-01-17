@@ -6,7 +6,7 @@ it on Windows, a virtual machine can be used to follow the steps.
 
 Clone this project using the following command:
 ```
-git clone --recurse-submodules https://github.com/pokitoz/qemu-lm3s6965evb.git
+git clone --recurse-submodules https://github.com/Introduction-To-System-On-Chip/QEMU_lm3s6965evb.git
 ```
 
 It will create a folder called `qemu-lm3s6965evb`.
