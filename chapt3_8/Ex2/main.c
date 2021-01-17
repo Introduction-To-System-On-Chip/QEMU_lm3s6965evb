@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 int main(void)
 {
@@ -14,7 +15,7 @@ int main(void)
            "MSP 0x%x\n\n",
             __get_CONTROL(), __get_PSP(), __get_MSP());
 
-
+  printf("Exercise 2\n");
   return 0;
 }
 

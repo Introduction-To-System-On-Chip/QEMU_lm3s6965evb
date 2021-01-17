@@ -11,15 +11,18 @@ TOOLCHAIN ?= ./gcc-arm-none-eabi-9-2019-q4-major/bin/
 
 QEMU_COMMAND := $(QEMU_PATH)qemu-system-arm
 
+# Add this in the QEMU_RUN_COMMAND to see all the exceptions taken
+## -d int,cpu_reset
 QEMU_RUN_COMMAND := $(QEMU_COMMAND) \
   -machine $(MACHINE) \
   -cpu cortex-m3 \
   -m 4096 \
   -nographic \
   -semihosting \
+  --semihosting-config enable=on,target=native \
+  -serial mon:stdio \
   -device loader,file=$(BINARY) \
-  -machine accel=tcg \
-  -d int,cpu_reset
+  -machine accel=tcg
 
 BINARY_OBJDUMP := objdump.txt
 
@@ -33,7 +36,8 @@ LINKER_SCRIPT = gcc_arm.ld
 SRC_ASM = $(CMSIS)/Device/ARM/ARMCM3/Source/GCC/startup_ARMCM3.S
 
 SRC_C = $(CMSIS)/Device/ARM/ARMCM3/Source/system_ARMCM3.c \
-        start.c
+        start.c \
+        uart.c
 
 RTX_OS_CMSIS_SRC = $(wildcard $(CMSIS)/CMSIS/RTOS/RTX/SRC/*.c) \
                    $(CMSIS)/CMSIS/RTOS/RTX/Templates/RTX_Conf_CM.c
@@ -43,6 +47,7 @@ RTX_SVC_ASM = $(CMSIS)/CMSIS/RTOS/RTX/SRC/GCC/SVC_Table.S
 
 3_8_1_SRC = $(wildcard chapt3_8/Ex1/*.c)
 3_8_1_SRC_ASM = chapt3_8/Ex1/startup_ARMCM3.S
+3_8_2_SRC = $(wildcard chapt3_8/Ex2/*.c)
 3_8_3_SRC = $(wildcard chapt3_8/Ex3/*.c)
 3_9_1_SRC = $(wildcard chapt3_9/Ex1/*.c)
 
@@ -84,6 +89,10 @@ rtxboot.o: $(RTX_SRC_ASM)
 
 
 3_8_1: $(SRC_C) $(3_8_1_SRC) 3_8_1_boot.o
+	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(BINARY)
+	$(OBJ) -D $(BINARY) > $@_$(BINARY_OBJDUMP)
+
+3_8_2: $(SRC_C) $(3_8_2_SRC) boot.o
 	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(BINARY)
 	$(OBJ) -D $(BINARY) > $@_$(BINARY_OBJDUMP)
 
