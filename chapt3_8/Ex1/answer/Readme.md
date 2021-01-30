@@ -105,3 +105,7 @@ This can be corrected by updating the file `startup_ARMCM3.S`:
 All handlers in `startup_ARMCM3.S` are defined as weak functions and can be
 redefined by creating a function with the same name. This can be seen in the
 `handler_definitions.c` file like it was done for the `SVC_Handler`.
+
+### Update the vector table
+
+
