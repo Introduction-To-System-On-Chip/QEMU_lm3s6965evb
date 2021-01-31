@@ -95,10 +95,12 @@ program needs to: load the value, increment it and store it to memory. Any
 task can be interrupted at any moment, so the following scenario could happen:
 
 ```
-          ------------------------------------------------> Time
-Thread A        Fetch Add Store
-Thread B  Fetch                 Add Store
-i         0     0     0   1     1   1
+-------------A-----B----C----D----E----F--> Step
+==========================================
+Thread A|    |   Fetch Add Store  |    |
+Thread B|  Fetch   |    |    |   Add Store
+==========================================
+i Value |    0     0    0    1     1   1
 ```
 
 As thread A and B fetched the same value of `i` in memory (0), they both add 1

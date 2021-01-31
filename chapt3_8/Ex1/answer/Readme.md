@@ -108,4 +108,18 @@ redefined by creating a function with the same name. This can be seen in the
 
 ### Update the vector table
 
+Updating the address of the Cortex-M3's Vector Table causes an undefined
+behavior. For Cortex-M3, the vector table should start at address (VTOR) 0.
+The format of this table must be as follow:
+- Index 0 should be the start address of the Stack pointer
+- Index 1 should be the address to the reset handler
+- Other indexes are for other handlers
 
+If there is no vector table at address 0, the Cortex-M3 will have no indication
+on how to boot and will execute some random instructions that are located at
+this memory location. This will probably create some faults. As the fault
+handler are not properly defined, the processor behavior is undefined.
+
+This can be done in the linker script by updating the variable: __ROM_BASE of
+the `FLASH (rx)  : ORIGIN = __ROM_BASE, LENGTH = __ROM_SIZE` which is where the
+.text section starts.

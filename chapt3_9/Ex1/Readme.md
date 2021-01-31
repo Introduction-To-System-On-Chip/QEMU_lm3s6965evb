@@ -31,6 +31,9 @@ Go through the different source files and fill the gaps where there is a TODO.
 - `chapt3_9/Ex1/mpu_manual.c`: Fill in the function to
 - `chapt3_9/Ex1/mpu_manual.h`: Update the register defines (set to 0xDEADBEEF)
   to the correct address (the `MPU_REG_RNR` is already correct).
+- Instead of using `ARM_MPU_SetRegion` function, use `ARM_MPU_Load` and create
+  a table of `MPU_Region_t` containing the definition of all the regions to be
+  configured.
 
 ## Program and test
 
